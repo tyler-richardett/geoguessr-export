@@ -1,0 +1,52 @@
+new_cluster: &new_cluster
+  new_cluster:
+    node_type_id: i3.xlarge
+    num_workers: 8
+    spark_version: 14.3.x-scala2.12
+    runtime_engine: STANDARD
+    spark_conf:
+      spark.databricks.sql.initial.catalog.name: free_our_vote
+
+resources:
+  jobs:
+    arizona_maricopa_search_params:
+      name: "Arizona - Maricopa County - Case Search Parameters"
+      job_clusters:
+        - job_cluster_key: task_cluster
+          <<: *new_cluster
+      tasks:
+        - task_key: task
+          job_cluster_key: task_cluster
+          python_wheel_task:
+            package_name: free_our_vote
+            entry_point: arizona_maricopa_search_params
+          libraries:
+            - whl: ../dist/*.whl
+
+    arizona_maricopa_case_numbers:
+      name: "Arizona - Maricopa County - Case Numbers"
+      job_clusters:
+        - job_cluster_key: task_cluster
+          <<: *new_cluster
+      tasks:
+        - task_key: task
+          job_cluster_key: task_cluster
+          python_wheel_task:
+            package_name: free_our_vote
+            entry_point: arizona_maricopa_case_numbers
+          libraries:
+            - whl: ../dist/*.whl
+
+    arizona_maricopa_case_details_html:
+      name: "Arizona - Maricopa County - Case Details HTML"
+      job_clusters:
+        - job_cluster_key: task_cluster
+          <<: *new_cluster
+      tasks:
+        - task_key: task
+          job_cluster_key: task_cluster
+          python_wheel_task:
+            package_name: free_our_vote
+            entry_point: arizona_maricopa_case_details_html
+          libraries:
+            - whl: ../dist/*.whl

@@ -1,0 +1,18 @@
+bundle:
+  name: geoguessr_export
+
+include:
+  - ./resources/jobs.yml
+
+workspace:
+  host: https://dbc-ce70412c-c615.cloud.databricks.com
+
+artifacts:
+  default:
+    type: whl
+    build: poetry build
+
+targets:
+  dev:
+    default: true
+    mode: development
