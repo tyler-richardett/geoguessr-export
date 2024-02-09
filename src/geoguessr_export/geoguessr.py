@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 from datetime import datetime, timedelta
 
 import pycountry
@@ -10,6 +9,8 @@ from dateutil.parser import parse
 from loguru import logger
 from pydantic import BaseModel, computed_field
 from strenum import StrEnum
+
+from geoguessr_export.databricks import get_env_variable
 
 
 class GeoguessrEndpoints(StrEnum):
@@ -73,7 +74,7 @@ class Geoguessr:
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
             }
         )
-        self._session.cookies.set("_ncfa", os.environ.get("GEOGUESSR_TOKEN") or ncfa_token)
+        self._session.cookies.set("_ncfa", get_env_variable("GEOGUESSR_TOKEN") or ncfa_token)
 
     def _get_challenge(self, challenge_id: str) -> dict:
         logger.info(f"Retrieving results from daily challenge ID {challenge_id}...")

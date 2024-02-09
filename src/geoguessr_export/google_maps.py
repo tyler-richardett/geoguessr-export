@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 from io import BytesIO
 
 import requests
 from PIL import Image
 from strenum import StrEnum
 
+from geoguessr_export.databricks import get_env_variable
 from geoguessr_export.geoguessr import GeoguessrIcons, Guess, Location
 
 
@@ -20,7 +20,7 @@ class GoogleMaps:
 
     def __init__(self, api_key: str | None = None):
         self._session = requests.Session()
-        self._session.params.update({"key": os.environ.get("GOOGLE_API_KEY") or api_key})
+        self._session.params.update({"key": get_env_variable("GOOGLE_API_KEY") or api_key})
 
     def _get_streetview(
         self, location: Location, heading: int, crop_bottom: int, width: int, height: int, pitch: int
@@ -41,7 +41,7 @@ class GoogleMaps:
 
         return image_cropped
 
-    def _get_streetview_pano(
+    def get_streetview_pano(
         self,
         location: Location,
         crop_bottom: int = 25,
@@ -66,7 +66,7 @@ class GoogleMaps:
 
         return image_pano
 
-    def _get_static_map(
+    def get_static_map(
         self,
         location: Location,
         guess: Guess,
