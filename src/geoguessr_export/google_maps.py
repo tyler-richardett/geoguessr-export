@@ -18,9 +18,9 @@ class GoogleMapsEndpoints(StrEnum):
 class GoogleMaps:
     BASE_URL = "https://maps.googleapis.com"
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: str | None = None) -> None:
         self._session = requests.Session()
-        self._session.params.update({"key": get_env_variable("GOOGLE_API_KEY") or api_key})
+        self._session.params.update({"key": api_key or get_env_variable("GOOGLE_API_KEY")})
 
     def _get_streetview(
         self, location: Location, heading: int, crop_bottom: int, width: int, height: int, pitch: int
@@ -53,8 +53,7 @@ class GoogleMaps:
 
         for idx, heading in enumerate([270, 0, 90, 180]):
             image = self._get_streetview(
-                latitude=location.latitude,
-                longitude=location.longitude,
+                location=location,
                 heading=heading,
                 crop_bottom=crop_bottom,
                 width=width,
@@ -82,8 +81,8 @@ class GoogleMaps:
                 "zoom": zoom,
                 "maptype": "roadmap",
                 "markers": [
-                    f"icon:{GeoguessrIcons.GUESS}|{guess.latitude},{guess.longitude}",
                     f"icon:{GeoguessrIcons.LOCATION}|{location.latitude},{location.longitude}",
+                    f"icon:{GeoguessrIcons.GUESS}|{guess.latitude},{guess.longitude}",
                 ],
             },
         )

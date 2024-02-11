@@ -5,16 +5,17 @@ description = ""
 authors = ["Tyler Richardett <tyler.richardett@gmail.com>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+geoguessr-export = "geoguessr_export.entrypoint:main"
+
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
 loguru = "^0.7.2"
 pydantic = "^2.4.2"
 strenum = "^0.4.15"
-pandas = "^2.2.0"
 requests = "^2.31.0"
 pycountry = "^23.12.11"
-pygithub = "^2.2.0"
-pillow = "^10.2.0"
+notion-client = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 bandit = { version = "1.7.5", extras = ["toml"] }

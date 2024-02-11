@@ -2,7 +2,7 @@ bundle:
   name: geoguessr_export
 
 include:
-  - ./resources/jobs.yml
+  - ./resources/job.yml
 
 workspace:
   host: https://dbc-ce70412c-c615.cloud.databricks.com

@@ -25,22 +25,39 @@ class GeoguessrIcons(StrEnum):
     GUESS = "https://www.geoguessr.com/_next/static/media/favicon.bffdd9d3.png"
 
 
+class GeoguessrMedals(StrEnum):
+    GOLD = "Gold 🥇"
+    SILVER = "Silver 🥈"
+    BRONZE = "Bronze 🥉"
+    NONE = "None"
+
+
 class Country(BaseModel):
-    code: str
+    code: str | None
 
     @computed_field
     @property
-    def name(self) -> str:
-        return pycountry.countries.get(alpha_2=self.code).name
+    def name(self) -> str | None:
+        return self.get_country_field("common_name") or self.get_country_field("name")
+
+    @computed_field
+    @property
+    def flag(self) -> str | None:
+        return self.get_country_field("flag")
+
+    def get_country_field(self, field: str) -> str | None:
+        if self.code:
+            matched_country = pycountry.countries.get(alpha_2=self.code)
+            return matched_country._fields.get(field)
 
 
 class Location(BaseModel):
     latitude: float
     longitude: float
-    pano_id: str
-    heading: int
-    pitch: int
-    zoom: int
+    pano_id: str | None
+    heading: float
+    pitch: float
+    zoom: float
     country: Country
 
 
@@ -63,18 +80,30 @@ class DailyChallenge(BaseModel):
     points_earned: int
     rounds: list[Round]
 
+    @computed_field
+    @property
+    def medal(self) -> GeoguessrMedals:
+        if self.points_earned >= 22500:
+            return GeoguessrMedals.GOLD
+        elif self.points_earned >= 15000:
+            return GeoguessrMedals.SILVER
+        elif self.points_earned >= 5000:
+            return GeoguessrMedals.BRONZE
+        else:
+            return GeoguessrMedals.NONE
+
 
 class Geoguessr:
     BASE_URL = "https://www.geoguessr.com"
 
-    def __init__(self, ncfa_token: str | None = None):
+    def __init__(self, ncfa_token: str | None = None) -> None:
         self._session = requests.Session()
         self._session.headers.update(
             {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
             }
         )
-        self._session.cookies.set("_ncfa", get_env_variable("GEOGUESSR_TOKEN") or ncfa_token)
+        self._session.cookies.set("_ncfa", ncfa_token or get_env_variable("GEOGUESSR_TOKEN"))
 
     def _get_challenge(self, challenge_id: str) -> dict:
         logger.info(f"Retrieving results from daily challenge ID {challenge_id}...")
@@ -156,7 +185,7 @@ class Geoguessr:
 
         return guesses
 
-    def _get_challenges(self, past_n_days: int = 1) -> list[DailyChallenge]:
+    def get_daily_challenges(self, past_n_days: int = 1) -> list[DailyChallenge]:
         pagination_token = None
         keep_going = True
         page_idx = 1
@@ -215,7 +244,6 @@ class Geoguessr:
 
             page_idx += 1
 
-        return daily_challenges
+        logger.info(f"Successfully retrieved {len(daily_challenges)} daily challenges.")
 
-    def run(self):
-        pass
+        return daily_challenges

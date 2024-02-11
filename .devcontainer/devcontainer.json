@@ -9,7 +9,10 @@
   },
   "remoteEnv": {
     "WORKSPACE": "${containerWorkspaceFolder}",
-    "DATABRICKS_TOKEN": "${localEnv:DATABRICKS_TOKEN_PERSONAL}"
+    "DATABRICKS_TOKEN": "${localEnv:DATABRICKS_TOKEN_PERSONAL}",
+    "GOOGLE_API_KEY": "${localEnv:GOOGLE_API_KEY}",
+    "GEOGUESSR_TOKEN": "${localEnv:GEOGUESSR_TOKEN}",
+    "NOTION_TOKEN": "${localEnv:NOTION_TOKEN}"
   },
   "postCreateCommand": [
     "/bin/sh",

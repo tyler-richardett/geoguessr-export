@@ -1,0 +1,37 @@
+resources:
+  jobs:
+    geoguessr_export:
+      name: "[Daily] Geoguessr Export to Notion"
+      email_notifications:
+        on_success:
+          - tyler.richardett@gmail.com
+        on_failure:
+          - tyler.richardett@gmail.com
+        no_alert_for_skipped_runs: true
+      notification_settings:
+        no_alert_for_skipped_runs: true
+        no_alert_for_canceled_runs: true
+      timeout_seconds: 1200
+      schedule:
+        quartz_cron_expression: 0 0 3 * * ?
+        timezone_id: America/Chicago
+        pause_status: UNPAUSED
+      max_concurrent_runs: 41
+      job_clusters:
+        - job_cluster_key: task_cluster
+          new_cluster:
+            node_type_id: i3.xlarge
+            num_workers: 0
+            spark_version: 14.3.x-scala2.12
+            runtime_engine: STANDARD
+            spark_conf:
+              spark.master: local[*, 4]
+              spark.databricks.cluster.profile: singleNode
+      tasks:
+        - task_key: task
+          job_cluster_key: task_cluster
+          python_wheel_task:
+            package_name: geoguessr_export
+            entry_point: geoguessr-export
+          libraries:
+            - whl: ../dist/*.whl
