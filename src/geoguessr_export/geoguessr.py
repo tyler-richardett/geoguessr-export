@@ -168,15 +168,16 @@ class Geoguessr:
         guesses = []
         for _guess in _guesses:
             _score: dict = _guess.get("roundScore")
-            _distance: dict = _guess.get("distance")
-            _distance_mi: dict = _distance.get("miles")
+            _distance_m: dict = _guess.get("distanceInMeters")
+
+            distance_mi = round(float(_distance_m) * 0.000621371, 1)
 
             guesses.append(
                 Guess(
                     latitude=_guess.get("lat"),
                     longitude=_guess.get("lng"),
                     points_earned=_score.get("amount"),
-                    distance_mi=_distance_mi.get("amount"),
+                    distance_mi=distance_mi,
                     time_seconds=_guess.get("time"),
                 )
             )
