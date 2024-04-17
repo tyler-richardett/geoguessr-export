@@ -98,11 +98,9 @@ class Geoguessr:
 
     def __init__(self, ncfa_token: str | None = None) -> None:
         self._session = requests.Session()
-        self._session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-            }
-        )
+        self._session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        })
         self._session.cookies.set("_ncfa", ncfa_token or get_env_variable("GEOGUESSR_TOKEN"))
 
     def _get_challenge(self, challenge_id: str) -> dict:
@@ -186,7 +184,7 @@ class Geoguessr:
 
         return guesses
 
-    def get_daily_challenges(self, past_n_days: int = 12) -> list[DailyChallenge]:
+    def get_daily_challenges(self, past_n_days: int = 2) -> list[DailyChallenge]:
         pagination_token = None
         keep_going = True
         page_idx = 1
