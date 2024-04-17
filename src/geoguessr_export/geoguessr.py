@@ -186,7 +186,7 @@ class Geoguessr:
 
         return guesses
 
-    def get_daily_challenges(self, past_n_days: int = 1) -> list[DailyChallenge]:
+    def get_daily_challenges(self, past_n_days: int = 2) -> list[DailyChallenge]:
         pagination_token = None
         keep_going = True
         page_idx = 1
