@@ -186,7 +186,7 @@ class Geoguessr:
 
         return guesses
 
-    def get_daily_challenges(self, past_n_days: int = 2) -> list[DailyChallenge]:
+    def get_daily_challenges(self, past_n_days: int = 12) -> list[DailyChallenge]:
         pagination_token = None
         keep_going = True
         page_idx = 1
@@ -218,27 +218,35 @@ class Geoguessr:
                     keep_going = False
                     break
 
-                _payload = entry.get("payload")
-                payload = json.loads(_payload)
+                _payloads = entry.get("payload")
+                _payloads = json.loads(_payloads)
 
-                if not isinstance(payload, dict):
-                    continue
+                payloads = []
 
-                if payload.get("isDailyChallenge") is True or (
-                    payload.get("isDailyChallenge") is None
-                    and payload.get("challengeToken") is not None
-                    and payload.get("mapName") == "World"
-                ):
-                    challenge_id = payload.get("challengeToken")
-                    rounds = self._get_rounds(challenge_id)
+                if isinstance(_payloads, list):
+                    for _payload in _payloads:
+                        payloads.append(_payload.get("payload"))
 
-                    challenge = DailyChallenge(
-                        completed_datetime_utc=completed_datetime_utc,
-                        points_earned=payload.get("points"),
-                        challenge_id=challenge_id,
-                        rounds=rounds,
-                    )
-                    daily_challenges.append(challenge)
+                if isinstance(_payloads, dict):
+                    payloads.append(_payloads)
+
+                for payload in payloads:
+                    if payload.get("isDailyChallenge") is True or (
+                        payload.get("isDailyChallenge") is None
+                        and payload.get("challengeToken") is not None
+                        and payload.get("mapName") == "World"
+                    ):
+                        challenge_id = payload.get("challengeToken")
+                        rounds = self._get_rounds(challenge_id)
+
+                        challenge = DailyChallenge(
+                            completed_datetime_utc=completed_datetime_utc,
+                            points_earned=payload.get("points"),
+                            challenge_id=challenge_id,
+                            rounds=rounds,
+                        )
+
+                        daily_challenges.append(challenge)
 
             if pagination_token is None:
                 logger.info("Reached end of My Activities pages, exiting.")
